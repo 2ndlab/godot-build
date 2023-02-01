@@ -42,7 +42,7 @@ jobs:
       - name: mv
         if: runner.os == 'Windows'
         run: |
-          mv custom.py $GITHUB_WORKSPACE/godot-4.0-beta16/custom.py
+          mv custom.py $GITHUB_WORKSPACE/godot-4.0-beta16/
           mkdir $GITHUB_WORKSPACE/cache && set SCONS_CACHE=$GITHUB_WORKSPACE/cache
           cd $GITHUB_WORKSPACE%/godot-4.0-beta16
           scons -Q platform=windows target=template_release arch=x86_64
