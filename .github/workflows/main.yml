@@ -44,6 +44,6 @@ jobs:
         run: |
           mv custom.py $GITHUB_WORKSPACE/godot-4.0-beta16/
           mkdir $GITHUB_WORKSPACE/cache && set SCONS_CACHE=$GITHUB_WORKSPACE/cache
-          ls -al
+          ls
           cd $GITHUB_WORKSPACE/godot-4.0-beta16
           scons -Q platform=windows target=template_release arch=x86_64
