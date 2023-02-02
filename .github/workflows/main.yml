@@ -39,15 +39,11 @@ jobs:
           wget -c "https://downloads.tuxfamily.org/godotengine/4.0/beta16/godot-4.0-beta16.tar.xz" && 7z x -y *.xz && 7z x -y *.tar
       - name: Copy Files
         run: |
-          $pwd
           mkdir godot-cache
           mv custom.py godot-4.0-beta16\custom.py
           $env:SCONS_CACHE="$pwd\godot-cache\"
-          $env:SCONS_CACHE
-          ls
-          ls $GITHUB_WORKSPACE
-          ls godot-cache
-          ls godot-4.0-beta16
+
       - name: Build
         run: |
-          # scons -Q platform=windows target=template_release arch=x86_64
+          cd godot-4.0-beta16
+          scons -Q platform=windows target=template_release arch=x86_64
