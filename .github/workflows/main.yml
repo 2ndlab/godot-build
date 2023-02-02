@@ -39,7 +39,7 @@ jobs:
           wget -c "https://downloads.tuxfamily.org/godotengine/4.0/beta16/godot-4.0-beta16.tar.xz" && 7z x -y *.xz && 7z x -y *.tar
       - name: Copy Files
         run: |
-          cp custom.py $GITHUB_WORKSPACE\godot-4.0-beta16\custom.py
+          cp custom.py $GITHUB_WORKSPACE\godot-4.0-beta16\
           mkdir $GITHUB_WORKSPACE\godot-cache\
           $env:SCONS_CACHE="$GITHUB_WORKSPACE\godot-cache\"
           ls $GITHUB_WORKSPACE
