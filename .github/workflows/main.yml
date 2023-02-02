@@ -3,7 +3,6 @@ name: Godot package
 env:
   SRC_NAME: "godot-4.0-beta16"
   SRC_URL: "https://downloads.tuxfamily.org/godotengine/4.0/beta16/godot-4.0-beta16.tar.xz"
-  PYTHON_VERSION: 3.11
 
 on: [push]
 jobs:
@@ -13,7 +12,7 @@ jobs:
       matrix:
         #os: [ubuntu-latest, macos-latest, windows-latest]
         os: [windows-latest]
-        python-version: ["${{env.PYTHON_VERSION}}"]
+        python-version: ["3.11"]
 
     steps:
       - uses: actions/checkout@v3
@@ -57,7 +56,7 @@ jobs:
       matrix:
         #os: [ubuntu-latest, macos-latest, windows-latest]
         os: [windows-latest]
-        python-version: ["${{env.PYTHON_VERSION}}"]
+        python-version: ["3.11"]
 
     steps:
       - uses: actions/checkout@v3
