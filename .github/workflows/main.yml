@@ -40,6 +40,7 @@ jobs:
       - name: Copy Files
         run: |
           $pwd
+          mkdir godot-cache
           mv custom.py godot-4.0-beta16\custom.py
           $env:SCONS_CACHE="$pwd\godot-cache\"
           $env:SCONS_CACHE
