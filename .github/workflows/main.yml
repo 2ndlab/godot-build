@@ -22,7 +22,6 @@ jobs:
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('godot-cache/**') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('godot-cache/**') }}
-            ${{ runner.os }}-build-${{ env.cache-name }}-
             ${{ runner.os }}-build-
             ${{ runner.os }}-
       - uses: actions/setup-python@v4
@@ -40,9 +39,14 @@ jobs:
       - name: Copy Files
         run: |
           mv custom.py godot-4.0-beta16\custom.py
-          $env:SCONS_CACHE="$pwd\godot-cache\"
-
       - name: Build
         run: |
+          $env:SCONS_CACHE="$pwd\godot-cache\"
           cd godot-4.0-beta16
           scons -Q platform=windows target=template_release arch=x86_64
+      - name: Archive production artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: x86_64
+          path: godot-4.0-beta16\bin\*.x86_64.*
+            
