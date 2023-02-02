@@ -14,7 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: actions/cache@v3
-        id: cache-godot
+        id: godot-cache
         env:
           cache-name: godot-cache
         with:
@@ -22,7 +22,7 @@ jobs:
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('godot-cache/**') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('godot-cache/**') }}
-            ${{ runner.os }}-build-${{ env.cache-name }}
+            ${{ runner.os }}-build-${{ env.cache-name }}-
             ${{ runner.os }}-build-
             ${{ runner.os }}-
       - uses: actions/setup-python@v4
@@ -39,12 +39,12 @@ jobs:
           wget -c "https://downloads.tuxfamily.org/godotengine/4.0/beta16/godot-4.0-beta16.tar.xz" && 7z x -y *.xz && 7z x -y *.tar
       - name: Copy Files
         run: |
-          mv custom.py $GITHUB_WORKSPACE/godot-4.0-beta16/
-          ls $GITHUB_WORKSPACE/godot-4.0-beta16/
-          mkdir godot-cache
-          $env:SCONS_CACHE="$GITHUB_WORKSPACE\godot-cache"
-          ls
-          cd $GITHUB_WORKSPACE\godot-cache
+          cp custom.py $GITHUB_WORKSPACE\godot-4.0-beta16\custom.py
+          mkdir $GITHUB_WORKSPACE\godot-cache\
+          $env:SCONS_CACHE="$GITHUB_WORKSPACE\godot-cache\"
+          ls $GITHUB_WORKSPACE
+          ls $GITHUB_WORKSPACE\godot-cache\
+          ls $GITHUB_WORKSPACE\godot-4.0-beta16\
       - name: Build
         run: |
           # scons -Q platform=windows target=template_release arch=x86_64
