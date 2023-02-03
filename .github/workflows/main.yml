@@ -6,14 +6,13 @@ env:
 
 on: [push]
 jobs:
-  build-x86_64:
+  windows-x86_64:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         #os: [ubuntu-latest, macos-latest, windows-latest]
         os: [windows-latest]
         python-version: ["3.11"]
-
     steps:
       - uses: actions/checkout@v3
       - uses: actions/cache@v3
@@ -22,9 +21,9 @@ jobs:
           cache-name: godot-cache
         with:
           path: godot-cache/**/*
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('godot-cache/**/*') }}
+          key: ${{ runner.os }}-build_x86_64-${{ env.cache-name }}-${{ hashFiles('godot-cache/**/*') }}
           restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('godot-cache/**/*') }}
+            ${{ runner.os }}-build_x86_64-${{ env.cache-name }}-${{ hashFiles('godot-cache/**/*') }}
       - uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
@@ -44,13 +43,13 @@ jobs:
         run: |
           $env:SCONS_CACHE="$pwd\godot-cache\"
           cd ${{env.SRC_NAME}}
-          scons -Q platform=windows target=template_release arch=x86_64
+          #scons -Q platform=windows target=template_release arch=x86_64
       - name: Archive production artifacts
         uses: actions/upload-artifact@v3
         with:
           name: ${{env.SRC_NAME}}_${{ runner.os }}_export_templates.x86_64
           path: ${{env.SRC_NAME}}\bin\godot.windows.template_*.x86_64.*
-  build-x86_32:
+  windows-x86_32:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -66,9 +65,9 @@ jobs:
           cache-name: godot-cache
         with:
           path: godot-cache/**/*
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('godot-cache/**/*') }}
+          key: ${{ runner.os }}-build_x86_32-${{ env.cache-name }}-${{ hashFiles('godot-cache/**/*') }}
           restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('godot-cache/**/*') }}
+            ${{ runner.os }}-build_x86_32-${{ env.cache-name }}-${{ hashFiles('godot-cache/**/*') }}
       - uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
@@ -88,9 +87,53 @@ jobs:
         run: |
           $env:SCONS_CACHE="$pwd\godot-cache\"
           cd ${{env.SRC_NAME}}
-          scons -Q platform=windows target=template_release arch=x86_32
+          #scons -Q platform=windows target=template_release arch=x86_32
       - name: Archive production artifacts
         uses: actions/upload-artifact@v3
         with:
           name: ${{env.SRC_NAME}}_${{ runner.os }}_export_templates.x86_32
           path: ${{env.SRC_NAME}}\bin\godot.windows.template_*.x86_32.*
+  android:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        #os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [windows-latest]
+        python-version: ["3.11"]
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/cache@v3
+        id: godot-cache
+        env:
+          cache-name: godot-cache
+        with:
+          path: godot-cache/**/*
+          key: ${{ runner.os }}-build_android-${{ env.cache-name }}-${{ hashFiles('godot-cache/**/*') }}
+          restore-keys: |
+            ${{ runner.os }}-build_android-${{ env.cache-name }}-${{ hashFiles('godot-cache/**/*') }}
+      - uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          #cache: 'pip'
+      - name: Install Scons
+        run: |
+          python -m pip install --upgrade pip
+          pip install scons
+      - name: Download godot source code
+        run: |
+          choco install wget
+          wget -c ${{env.SRC_URL}} && 7z x -y *.xz && 7z x -y *.tar
+      - name: Copy Files
+        run: |
+          mv custom.py ${{env.SRC_NAME}}\custom.py
+      - name: Build
+        run: |
+          $env:SCONS_CACHE="$pwd\godot-cache\"
+          cd ${{env.SRC_NAME}}
+          scons -Q platform=android target=template_release arch=armv8
+      - name: Archive production artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{env.SRC_NAME}}_android_export_templates.armv8
+          path: ${{env.SRC_NAME}}\bin\*.android.*
