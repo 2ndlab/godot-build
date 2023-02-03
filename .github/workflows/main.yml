@@ -133,7 +133,8 @@ jobs:
           $env:SCONS_CACHE="$pwd\godot-cache\"
           cd ${{env.SRC_NAME}}
           scons -Q platform=android target=release android_arch=arm64v8
-          cd platform/android/java && gradlew generateGodotTemplates
+          cd platform/android/java
+          ./gradlew generateGodotTemplates
       - name: Archive production artifacts
         uses: actions/upload-artifact@v3
         with:
