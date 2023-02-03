@@ -138,7 +138,7 @@ jobs:
           cd ${{env.SRC_NAME}}
           scons -Q platform=android target=template_release android_arch=arm64v8
           cd platform/android/java
-          gradlew generateGodotTemplates --nodaemon
+          .\gradlew generateGodotTemplates --nodaemon
       - name: Archive production artifacts
         uses: actions/upload-artifact@v3
         with:
