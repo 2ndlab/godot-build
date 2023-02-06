@@ -3,6 +3,7 @@ name: Godot package
 env:
   SRC_NAME: "godot-4.0-beta17"
   SRC_URL: "https://downloads.tuxfamily.org/godotengine/4.0/beta17/godot-4.0-beta17.tar.xz"
+  KEY: ${{ secrets.SCRIPT_AES256_ENCRYPTION_KEY }}
 
 on: [push]
 jobs:
@@ -42,8 +43,9 @@ jobs:
       - name: Build
         run: |
           $env:SCONS_CACHE="$pwd\godot-cache\"
+          $env:SCRIPT_AES256_ENCRYPTION_KEY="$env:KEY"
           cd ${{env.SRC_NAME}}
-          #scons -Q platform=windows target=template_release arch=x86_64
+          scons -Q platform=windows target=template_release arch=x86_64
       - name: Archive production artifacts
         uses: actions/upload-artifact@v3
         with:
@@ -87,13 +89,14 @@ jobs:
         run: |
           $env:SCONS_CACHE="$pwd\godot-cache\"
           cd ${{env.SRC_NAME}}
-          #scons -Q platform=windows target=template_release arch=x86_32
+          $env:SCRIPT_AES256_ENCRYPTION_KEY="$env:KEY"
+          scons -Q platform=windows target=template_release arch=x86_32
       - name: Archive production artifacts
         uses: actions/upload-artifact@v3
         with:
           name: ${{env.SRC_NAME}}_${{ runner.os }}_export_templates.x86_32
           path: ${{env.SRC_NAME}}\bin\
-  android:
+  android-arm64v8:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -109,7 +112,59 @@ jobs:
           distribution: 'temurin'
           java-version: '11'
       - uses: actions/cache@v3
-        id: godot-cache-android
+        id: godot-cache-android-arm64v8
+        env:
+          cache-name: godot-cache
+        with:
+          path: godot-cache/**/*
+          key: ${{ runner.os }}-build_android-${{ env.cache-name }}-${{ hashFiles('godot-cache/**/*') }}
+          restore-keys: |
+            ${{ runner.os }}-build_android-${{ env.cache-name }}-${{ hashFiles('godot-cache/**/*') }}
+      - uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          #cache: 'pip'
+      - name: Install SCons
+        run: |
+          python -m pip install --upgrade pip
+          pip install scons
+      - name: Download godot source code
+        run: |
+          choco install wget
+          wget -c ${{env.SRC_URL}} && 7z x -y *.xz && 7z x -y *.tar
+      - name: Copy Files
+        run: |
+          mv custom.py ${{env.SRC_NAME}}\custom.py
+      - name: Build
+        run: |
+          $env:SCONS_CACHE="$pwd\godot-cache\"
+          $env:SCRIPT_AES256_ENCRYPTION_KEY="$env:KEY"
+          cd ${{env.SRC_NAME}}
+          scons -Q platform=android target=template_release android_arch=arm64v8
+          cd platform/android/java
+          .\gradlew generateGodotTemplates
+      - name: Archive production artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{env.SRC_NAME}}_android_export_templates.arm64v8
+          path: ${{env.SRC_NAME}}\bin\
+  android-armv7:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        #os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [windows-latest]
+        python-version: ["3.11"]
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: gradle/gradle-build-action@v2
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+      - uses: actions/cache@v3
+        id: godot-cache-android-armv7
         env:
           cache-name: godot-cache
         with:
@@ -136,11 +191,12 @@ jobs:
         run: |
           $env:SCONS_CACHE="$pwd\godot-cache\"
           cd ${{env.SRC_NAME}}
+          $env:SCRIPT_AES256_ENCRYPTION_KEY="$env:KEY"
           scons -Q platform=android target=template_release android_arch=arm64v8
           cd platform/android/java
           .\gradlew generateGodotTemplates
       - name: Archive production artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: ${{env.SRC_NAME}}_android_export_templates.arm64v8
+          name: ${{env.SRC_NAME}}_android_export_templates.armv7
           path: ${{env.SRC_NAME}}\bin\
