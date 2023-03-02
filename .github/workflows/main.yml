@@ -1,8 +1,8 @@
 name: Godot package
 
 env:
-  SRC_NAME: "godot-4.0-beta17"
-  SRC_URL: "https://downloads.tuxfamily.org/godotengine/4.0/beta17/godot-4.0-beta17.tar.xz"
+  SRC_NAME: "godot-4.0-stable"
+  SRC_URL: "https://downloads.tuxfamily.org/godotengine/4.0/godot-4.0-stable.tar.xz"
   KEY: ${{ secrets.SCRIPT_AES256_ENCRYPTION_KEY }}
 
 on: [push]
